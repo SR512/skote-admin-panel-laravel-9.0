@@ -25,11 +25,16 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $params = [];
+        $params['query_str'] = $request->query_str;
+        $params['role'] = $request->role;
+
         $users = resolve('user-repo')->filter($params);
-        return view('admin.usermanagement.user_list', compact('users'));
+        $skip_roles = [config('constants.SUPER_ADMIN')];
+        $roles = Role::whereNotIn('name',$skip_roles)->pluck('name','id');
+        return view('admin.usermanagement.user_list', compact('users','roles'));
     }
 
     /**

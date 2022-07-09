@@ -68,9 +68,21 @@ class UserRepository
 
     public function filter($params)
     {
-        $this->model = $this->model->whereHas('roles',function ($query){
-           $query->where('name','<>',config('constants.SUPER_ADMIN'));
+
+        $this->model = $this->model->when(!empty($params['query_str']), function ($query) use ($params) {
+            $query->where('name', 'LIKE', '%' . $params['query_str'] . "%")->orWhere('email', 'LIKE', '%' . $params['query_str'] . "%");
         });
+
+        $this->model = $this->model->when(!empty($params['role']), function ($query) use ($params) {
+            $query->whereHas('roles', function ($query) use ($params) {
+                $query->where('id', $params['role']);
+            });
+        });
+
+        $this->model = $this->model->whereHas('roles', function ($query) {
+            $query->whereNot('name', config('constants.SUPER_ADMIN'));
+        });
+
         return $this->model->latest()->paginate(config('constants.PER_PAGE'));
 
     }

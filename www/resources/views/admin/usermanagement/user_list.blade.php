@@ -22,7 +22,21 @@
                         @endcan
                     </div>
                     <div class="float-start">
-                        <h4 class="card-title"></h4>
+                        {!! Form::open(['url' =>route('usermanagements.index'),'id' =>'form-search','class'=>'row row-cols-lg-auto g-3 align-items-center','method' => 'get']) !!}
+                        <div class="form-group">
+                            {!! Form::text('query_str',request()->query('query_str'),['class'=>'form-control','placeholder'=>'Search by name / email','style="width: 330px;"']) !!}
+                        </div>
+                        <div class="form-group">
+                            {!! Form::select('role',$roles,request()->query('role'),['class'=>'form-control zone','placeholder'=>'Select role']) !!}
+                        </div>
+                        <button type="submit" name="type" value="submit" class="btn btn-primary waves-effect waves-light">
+                            Submit
+                        </button>
+                        &nbsp;
+                        <a href="{{route('usermanagements.index')}}" class="btn btn-secondary waves-effect waves-light">
+                            Reset
+                        </a>
+                        {!! Form::close() !!}
                     </div>
                     <div class="clearfix"></div>
                     <table id="user-data " class="table table-striped table-bordered dt-responsive mt-2"
