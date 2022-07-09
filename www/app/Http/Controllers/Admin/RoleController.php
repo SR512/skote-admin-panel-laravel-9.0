@@ -17,7 +17,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::where('show_while_creating_user', 'YES')->get();
+        $roles = Role::where('show_while_creating_user', 'YES')->latest()->paginate(config('constants.PER_PAGE'));
         return view('admin.rolemanagement.role', compact('roles'));
     }
 
@@ -128,4 +128,5 @@ class RoleController extends Controller
             return redirect()->back();
         }
     }
+
 }

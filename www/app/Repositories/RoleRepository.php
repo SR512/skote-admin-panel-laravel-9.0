@@ -9,25 +9,28 @@ use http\Env\Request;
 
 class RoleRepository
 {
-    // Get All data
-    public function getAll()
+    private $model;
+
+    /**
+     * RoleRepository constructor.
+     */
+    public function __construct(Role $model)
     {
-        return Role::latest()->get();
+        $this->model = $model;
     }
 
-    // Get data by id
     public function findByID($id)
     {
-        return Role::findById($id);
+        return $this->model->findById($id);
     }
 
     // Create new recoard
-    public function create($request)
+    public function create($params)
     {
 
-        $role = Role::create($request->only('name'));
+        $role = $this->model->create($params->only('name'));
 
-        $permissions = $request->permission;
+        $permissions = $params->permission;
 
         $role->syncPermissions($permissions);
 
@@ -35,12 +38,12 @@ class RoleRepository
     }
 
     // Update recoard
-    public function update($request, $id)
+    public function update($params, $id)
     {
-        $permissions = $request->permission;
+        $permissions = $params->permission;
 
         $role = $this->findByID($id);
-        $role->name = $request->name;
+        $role->name = $params->name;
         $role->save();
 
         $role->syncPermissions($permissions);

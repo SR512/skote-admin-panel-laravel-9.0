@@ -27,8 +27,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = resolve('user-repo')->getAll();
-        return view('user.user', compact('users'));
+        $params = [];
+        $users = resolve('user-repo')->filter($params);
+        return view('admin.usermanagement.user_list', compact('users'));
     }
 
     /**
@@ -38,9 +39,9 @@ class UserController extends Controller
      */
     public function create()
     {
-
-        $roles = Role::all()->pluck('name', 'id');
-        return view('user.create_user', compact('roles'));
+        $skip_roles = [config('constants.SUPER_ADMIN')];
+        $roles = Role::whereNotIn('name', $skip_roles)->pluck('name', 'id');
+        return view('admin.usermanagement.create_user', compact('roles'));
     }
 
     /**
@@ -72,7 +73,7 @@ class UserController extends Controller
                 //Mail::send(new UserCreateNotification($params));
 
                 toastr()->success($user->name . ' created successfully..!');
-                return redirect()->route('user.index');
+                return redirect()->route('usermanagement.index');
 
             }
             toastr()->error('User not created successfully..!');
@@ -103,8 +104,9 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = resolve('user-repo')->findByID($id);
-        $roles = Role::all()->pluck('name', 'id');
-        return view('user.create_user', compact('user', 'roles'));
+        $skip_roles = [config('constants.SUPER_ADMIN')];
+        $roles = Role::whereNotIn('name', $skip_roles)->pluck('name', 'id');
+        return view('admin.usermanagement.create_user', compact('user', 'roles'));
     }
 
     /**
@@ -132,7 +134,7 @@ class UserController extends Controller
 
             if (!empty($user)) {
                 toastr()->success('User updated successfully..!');
-                return redirect()->route('user.index');
+                return redirect()->route('usermanagement.index');
             }
             toastr()->error('User not created successfully..!');
             return redirect()->back();
@@ -156,7 +158,7 @@ class UserController extends Controller
 
                 $user->delete();
                 toastr()->success($user->name . ' deleted successfully..!');
-                return redirect()->route('user.index');
+                return redirect()->route('usermanagement.index');
             } else {
                 toastr()->error('User not found.!');
             }
@@ -170,8 +172,8 @@ class UserController extends Controller
     {
         try {
             $user = resolve('user-repo')->changeStatus($id);
-            toastr()->success($user->name . ' status changed successfully..!');
-            return redirect()->route('user.index');
+            toastr()->success('Status changed successfully..!');
+            return redirect()->route('usermanagement.index');
         } catch (\Exception $e) {
             toastr()->error($e->getMessage());
             return redirect()->back();

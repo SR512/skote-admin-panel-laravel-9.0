@@ -43,10 +43,6 @@
                                     <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$row->id) }}"><i class="mdi mdi-pencil"></i>&nbsp;Edit</a>
                                     @endcan
                                     @can('roles.destroy')
-                                        <a class="btn btn-sm {{ $row->is_active == 'Y' ? 'btn-danger':'btn-success'}}"
-                                           href="{{ route('role.status',$row->id) }}"><i
-                                                class="mdi {{ $row->is_active == 'Y' ? 'mdi-block-helper':'mdi-eye'}}"></i>&nbsp;{{ $row->is_active == 'Y' ? 'Inactive':'Active'}}
-                                        </a>
                                         <a href="#" class="edit btn btn-sm btn-danger"
                                        onclick="if(confirm('Are you sure you want to delete.')) document.getElementById('delete-{{ $row->id }}').submit()">
                                         <i class="fa fa-trash">&nbsp;Delete</i>
@@ -60,6 +56,7 @@
                         @endforeach
                         </tbody>
                     </table>
+                    {{$roles->appends($_GET)->links()}}
                 </div>
             </div>
         </div>

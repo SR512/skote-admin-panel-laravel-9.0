@@ -7,27 +7,32 @@ namespace App\Repositories;
 use App\Models\City;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository
 {
-    // Get All data
-    public function getAll()
+    public $model;
+
+    /**
+     * UserRepository constructor.
+     */
+    public function __construct(User $model)
     {
-        return User::latest()->paginate(config('constants.PER_PAGE'));
+        return $this->model = $model;
     }
 
     // Get data by id
     public function findByID($id)
     {
-        return User::findorFail($id);
+        return $this->model->findorFail($id);
     }
 
     // Create new recoard
     public function create($params)
     {
 
-        $user = User::create($params);
+        $user = $this->model->create($params);
 
         $user->assignRole($params['role']);
 
@@ -41,6 +46,7 @@ class UserRepository
 
         // Update role
         if ($user) {
+            DB::table('model_has_roles')->where('model_id', $id)->delete();
             $this->findByID($id)->syncRoles($params['role']);
         }
         return $user;
@@ -59,5 +65,27 @@ class UserRepository
         return $this->findByID($id)->update($params);
 
     }
+
+    public function filter($params)
+    {
+        $this->model = $this->model->whereHas('roles',function ($query){
+           $query->where('name','<>',config('constants.SUPER_ADMIN'));
+        });
+        return $this->model->latest()->paginate(config('constants.PER_PAGE'));
+
+    }
+
+    public function changeStatus($id)
+    {
+        $user = $this->findByID($id);
+        if ($user->is_active == 'Y') {
+            $user->is_active = 'N';
+        } else {
+            $user->is_active = 'Y';
+        }
+
+        return $user->save();
+    }
+
 
 }

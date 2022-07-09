@@ -28,12 +28,12 @@ Route::group(['middleware' => 'auth'], function () {
     // User Profile Controller
     Route::resource('profiles', \App\Http\Controllers\Admin\UserProfileController::class);
     Route::get('/profile', [\App\Http\Controllers\Admin\UserProfileController::class, 'index'])->name('profile.index');
-    Route::post('/change/password', [\App\Http\Controllers\Admin\UserManagementController::class, 'changePassword'])->name('change.password');
+    Route::post('/change/password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('change.password');
 
-    // UserManagement Controller Route
-    Route::resource('usermanagements', \App\Http\Controllers\Admin\UserManagementController::class);
-    Route::get('/usermanagement', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('usermanagement.index');
-    Route::get('/usermanagement/status/{id}', [\App\Http\Controllers\Admin\UserManagementController::class, 'changeStatus'])->name('usermanagements.status');
+    // User Controller Route
+    Route::resource('usermanagements', \App\Http\Controllers\Admin\UserController::class);
+    Route::get('/usermanagement', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('usermanagement.index');
+    Route::get('/usermanagement/status/{id}', [\App\Http\Controllers\Admin\UserController::class, 'changeStatus'])->name('usermanagements.status');
 
     // Email Template Controller
     Route::resource('emailtemplates', \App\Http\Controllers\Admin\EmailTemplateController::class);
